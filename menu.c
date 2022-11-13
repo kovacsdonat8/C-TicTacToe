@@ -9,6 +9,17 @@
 
 #define PLAYER_HUMAN 1
 #define PLAYER_CPU 2
+#define SAVE_GAME "amobasave.txt"
+
+bool ask_yes_or_no(char *question){
+    printf("%s (Y/N) ", question);
+    char yesno[5];
+    scanf("%1s", yesno);
+    if (yesno[0] == 'Y' || yesno[0] == 'y'){
+        return true;
+    }
+    return false;
+}
 
 void get_player_name(char *name){
     while ((getchar()) != '\n');
@@ -37,11 +48,13 @@ static void play_game(Game *g){
                 if (valid) {
                     if (is_game_won(g)){
                         playing = false;
+                        print_board(g);
                         printf("\nGAME OVER!\nThe winner is %s!\n",
                                g->actual_player == 0 ? g->p1name : g->p2name);
                     }
                     if (is_board_full(g)){
                         playing = false;
+                        print_board(g);
                         printf("\nGAME OVER!\nNo more moves!\nDRAW!\n");
                     }
                     g->actual_player = 1 - g->actual_player;
@@ -52,6 +65,7 @@ static void play_game(Game *g){
 }
 
 static void play_menu(Game *g){
+    FILE *fp;
     int menu;
     do {
         printf(
@@ -64,24 +78,42 @@ static void play_menu(Game *g){
         switch (menu){
             case 1:
                 if (g->board != NULL){
-                    printf("There is an ongoing game. Are you sure you want to restart?\n");
-                    free(g->board);
+                    if (ask_yes_or_no("There is an ongoing game. Are you sure you want to restart?")){
+                        free(g->board);
+                        g->board = NULL;
+                    }
                 }
-                g->board = (char*) malloc(g->boardsize * g->boardsize);
-                memset(g->board, ' ', g->boardsize * g->boardsize);
-                play_game(g);
+                if (g->board == NULL) {
+                    g->board = (char *) malloc(g->boardsize * g->boardsize);
+                    memset(g->board, ' ', g->boardsize * g->boardsize);
+                    g->actual_player = 0;
+                    play_game(g);
+                }
                 break;
             case 2:
-
+                if (g->board == NULL){
+                    printf("There are no ongoing games!\n");
+                }
+                else{
+                    play_game(g);
+                }
                 break;
             case 3:
-
+                fp = fopen(SAVE_GAME, "w");
+                fwrite(g, sizeof(Game) - sizeof(char *), 1, fp);
+                fwrite(g->board, 1, g->boardsize * g->boardsize, fp);
+                fclose(fp);
                 break;
             case 4:
-
+                if (ask_yes_or_no("Do you want to load game?")){
+                    fp = fopen(SAVE_GAME, "r");
+                    fread(g, sizeof(Game) - sizeof(char *), 1, fp);
+                    g->board = (char *) malloc(g->boardsize * g->boardsize);
+                    fread(g->board, 1, g->boardsize * g->boardsize, fp);
+                    fclose(fp);
+                }
                 break;
             case 0:
-
                 break;
             default:
                 printf("Invalid choice!\n");
@@ -130,11 +162,11 @@ static void options_menu(Game *g){
 }
 
 static void print_rules(void){
-    printf("This game is played by two players on a square grid board.\n");
+    printf("\nThis game is played by two players on a square grid board.\n");
     printf("Players take turns placing their own marks (\"O\" or \"X\") in one of the still empty squares.\n");
     printf("The game ends if one player wins or if the board is full, in which case it will be a draw outcome.\n");
     printf("To win, one player needs at least 5 marks in a line, each other next to it.\n"); // next to each other either horizontally, vertically or diagonally.
-    printf("The line can be horizontal, vertical or diagonal.\n\n");
+    printf("The line can be horizontal, vertical or diagonal.\n");
 }
 
 

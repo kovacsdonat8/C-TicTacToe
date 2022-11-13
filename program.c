@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "base.h"
 #include "menu.h"
 
