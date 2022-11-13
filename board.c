@@ -19,10 +19,10 @@ void board_size(Game *g){
     while (!valid) {
         printf("Enter the size of the board: ");
         scanf("%d", &g->boardsize);
-        if (g->boardsize >= 5){
-            valid = true;
+        if (g->boardsize < 5 || g->boardsize > 50){
+            printf("Invalid size!\n");
         }
-        printf("Invalid move!\n");
+        valid = true;
     }
     free(g->board);
     g->board = NULL;
