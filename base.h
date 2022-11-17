@@ -14,4 +14,5 @@ typedef struct Game{
     int actual_player;
 }Game;
 
+//#define printf setbuf(stdout,0);printf
 #endif //AMOBA_NHF_BASE_H

@@ -49,44 +49,84 @@ bool is_board_full(Game *g){
     return true;
 }
 
+int longest_line(Game *g, int row, int col){
+    int maxcount = 0;
+    int count = 1;
+    char mark = get_mark(g, row, col);
+    if (mark == ' '){
+        return 0;
+    }
+    int k;
+    for (k = 1; col + k < g->boardsize; k++){
+        if (get_mark(g, row, col + k) != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    for (k = 1; col - k >= 0; k++){
+        if (get_mark(g, row, col - k) != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    if (count > maxcount){
+        maxcount = count;
+    }
+    count = 1;
+    for (k = 1; row + k < g->boardsize; k++){
+        if (get_mark(g, row + k, col) != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    for (k = 1; row - k >= 0; k++){
+        if (get_mark(g, row - k, col) != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    if (count > maxcount){
+        maxcount = count;
+    }
+    count = 1;
+    for (k = 1; row + k < g->boardsize && col + k < g->boardsize; k++){
+        if (get_mark(g, row + k, col + k) != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    for (k = 1; row - k >= 0 && col - k >= 0; k++){
+        if (get_mark(g, row - k, col - k) != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    if (count > maxcount){
+        maxcount = count;
+    }
+    count = 1;
+    for (k = 1; row - k >= 0 && col + k < g->boardsize; k++){
+        if (get_mark(g, row - k, col + k) != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    for (k = 1; row + k < g->boardsize && col - k > 0; k++){
+        if (get_mark(g, row + k, col - k) != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    if (count > maxcount){
+        maxcount = count;
+    }
+    return maxcount;
+}
+
 bool is_game_won(Game *g){
     for (int i = 0; i < g->boardsize; i++){
         for (int j = 0; j < g->boardsize; j++){
-            char mark = get_mark(g, i, j);
-            if (mark == ' '){
-                continue;
-            }
-            int k;
-            for (k = 1; k < 5 && j + k < g->boardsize; k++){
-                if (get_mark(g, i, j + k) != mark){
-                    break;
-                }
-            }
-            if (k == 5){
-                return true;
-            }
-            for (k = 1; k < 5 && i + k < g->boardsize; k++){
-                if (get_mark(g, i + k, j) != mark){
-                    break;
-                }
-            }
-            if (k == 5){
-                return true;
-            }
-            for (k = 1; k < 5 && i + k < g->boardsize && j + k < g->boardsize; k++){
-                if (get_mark(g, i + k, j + k) != mark){
-                    break;
-                }
-            }
-            if (k == 5){
-                return true;
-            }
-            for (k = 1; k < 5 && i - k >= 0 && j + k < g->boardsize; k++){
-                if (get_mark(g, i - k, j + k) != mark){
-                    break;
-                }
-            }
-            if (k == 5){
+            if (longest_line(g, i, j) >= 5){
                 return true;
             }
         }
@@ -111,8 +151,12 @@ void print_board(Game *g) {
         rowname(i, row);
         printf("-\n%2s ", row);
         for (j = 0; j < n; j++){
-            printf("| ");
-            printf("%c ", g->board[i * g->boardsize + j]);
+            if (longest_line(g, i, j) >= 5){
+                printf("|(%c)", get_mark(g, i, j));
+            }
+            else{
+                printf("| %c ", get_mark(g, i, j));
+            }
         }
         printf("|\n");
     }
