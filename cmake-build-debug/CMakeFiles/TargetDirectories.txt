@@ -1,0 +1,3 @@
+C:/Users/kovac/Documents/GitHub/amoba_NHF/cmake-build-debug/CMakeFiles/amoba_NHF.dir
+C:/Users/kovac/Documents/GitHub/amoba_NHF/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/kovac/Documents/GitHub/amoba_NHF/cmake-build-debug/CMakeFiles/rebuild_cache.dir

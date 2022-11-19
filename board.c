@@ -8,11 +8,19 @@ char get_mark(Game *g, int row, int col){
     return g->board[row * g->boardsize + col];
 }
 
-/*
-char set_mark(Game *g, int row, int col){
-
+char set_mark(Game *g, int row, int col, int clear){
+    if (clear == 0){
+        if (g->actual_player == 0){
+            g->board[row * g->boardsize + col] = 'X';
+        } else {
+            g->board[row * g->boardsize + col] = 'O';
+        }
+    }
+    else {
+        g->board[row * g->boardsize + col] = ' ';
+    }
 }
-*/
+
 
 void board_size(Game *g){
     bool valid = false;
@@ -47,6 +55,32 @@ bool is_board_full(Game *g){
         }
     }
     return true;
+}
+
+bool is_board_empty(Game *g){
+    for (int i = 0; i< g->boardsize * g->boardsize; i++){
+        if (g->board[i] != ' '){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool has_neighbour(Game *g, int row, int col){
+    for (int i = row - 1; i <= row + 1; i++){
+        for (int j = col - 1; j <= col + 1; j++){
+            if (i < 0 || i >= g->boardsize || j < 0 || j >= g->boardsize) {
+                continue;
+            }
+            if (i == row && j == col) {
+                continue;
+            }
+            if (get_mark(g, i, j) != ' '){
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 int longest_line(Game *g, int row, int col){

@@ -1,0 +1,7 @@
+# ninja log v5
+4	260	6904950983480321	CMakeFiles/amoba_NHF.dir/program.c.obj	8d3bbac9f357264f
+4	135	6905903239418194	CMakeFiles/amoba_NHF.dir/menu.c.obj	19c8718f7a9baaf8
+136	269	6905903240696048	amoba_NHF.exe	cb7c9350d73698d4
+11	200	6905902121868432	CMakeFiles/amoba_NHF.dir/board.c.obj	6d8f3772e6381679
+16	197	6905902121828455	CMakeFiles/amoba_NHF.dir/moves.c.obj	462325aaaff9b2ba
+2	218	6905909660241714	build.ninja	57278fa8e41f883a

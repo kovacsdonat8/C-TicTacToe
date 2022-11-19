@@ -2,6 +2,11 @@
 #define AMOBA_NHF_BASE_H
 
 #define NAME_LEN 50
+#define PLAYER_HUMAN 1
+#define PLAYER_CPU_RANDOM 2
+#define PLAYER_CPU_DEFENSIVE 3
+#define PLAYER_CPU_OFFENSIVE 4
+
 typedef struct Game{
     char p1name[NAME_LEN + 1];
     char p1sign;
