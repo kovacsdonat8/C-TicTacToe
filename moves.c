@@ -26,7 +26,7 @@ bool computer_move_random(Game *g, int *row, int *col){
         while (!valid){
             *row = rand() % g->boardsize;
             *col = rand() % g->boardsize;
-            if (get_mark(g, *row, *col) == ' '){
+            if (g->board[*row][*col] == ' '){
                 if (has_neighbour(g, *row, *col)){
                     valid = true;
                 }
@@ -57,16 +57,17 @@ bool computer_move_offensive(Game *g, int *row, int *col){
         *col = g->boardsize / 2;
     }
     else{
+        char sign = g->actual_player == 0 ? g->p1sign : g->p2sign;
         for (int i = 0; i < g->boardsize; i++) {
             for (int j = 0; j < g->boardsize; j++) {
-                if (get_mark(g, i, j) == ' ') {
-                    set_mark(g, i, j, 0);
+                if (g->board[i][j] == ' ') {
+                    g->board[i][j] = sign;
                     if (longest_line(g, i, j) > max) {
                         max = longest_line(g, i, j);
                         *row = i;
                         *col = j;
                     }
-                    set_mark(g, i, j, 1);
+                    g->board[i][j] = ' ';
                 }
             }
 
@@ -106,11 +107,10 @@ bool human_move(Game *g, int *row, int *col){
 
 bool mark_player_move(Game *g, int row, int col){
     char sign = g->actual_player == 0 ? g->p1sign : g->p2sign;
-    int index = row * g->boardsize + col;
-    if (g->board[index] != ' '){
+    if (g->board[row][col] != ' '){
         printf("Invalid move!\n");
         return false;
     }
-    g->board[index] = sign;
+    g->board[row][col] = sign;
     return true;
 }

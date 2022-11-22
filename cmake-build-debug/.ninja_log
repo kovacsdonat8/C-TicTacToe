@@ -5,3 +5,15 @@
 11	200	6905902121868432	CMakeFiles/amoba_NHF.dir/board.c.obj	6d8f3772e6381679
 16	197	6905902121828455	CMakeFiles/amoba_NHF.dir/moves.c.obj	462325aaaff9b2ba
 2	218	6905909660241714	build.ninja	57278fa8e41f883a
+23	260	6905912659915691	CMakeFiles/amoba_NHF.dir/moves.c.obj	c2a89a53d7aaeedd
+17	294	6905912660175140	CMakeFiles/amoba_NHF.dir/board.c.obj	22266033999b4d2e
+9	321	6905912660571960	CMakeFiles/amoba_NHF.dir/program.c.obj	d8dc8e079632dbf5
+261	392	6905912661293846	CMakeFiles/amoba_NHF.dir/menu.c.obj	7222cf6e5fefc254
+392	535	6905912662659456	amoba_NHF.exe	cb7c9350d73698d4
+4	366	6908614902210290	CMakeFiles/amoba_NHF.dir/program.c.obj	d8dc8e079632dbf5
+11	405	6908614902433308	CMakeFiles/amoba_NHF.dir/board.c.obj	22266033999b4d2e
+16	415	6908614902691927	CMakeFiles/amoba_NHF.dir/menu.c.obj	7222cf6e5fefc254
+367	857	6908614906082709	CMakeFiles/amoba_NHF.dir/moves.c.obj	c2a89a53d7aaeedd
+858	1900	6908614916799919	amoba_NHF.exe	cb7c9350d73698d4
+5	141	6908616981011131	CMakeFiles/amoba_NHF.dir/board.c.obj	22266033999b4d2e
+141	293	6908616982492157	amoba_NHF.exe	cb7c9350d73698d4

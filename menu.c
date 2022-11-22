@@ -7,7 +7,6 @@
 #include "board.h"
 #include "moves.h"
 
-#define SAVE_GAME "amobasave.txt"
 
 bool ask_yes_or_no(char *question){
     printf("%s (Y/N) ", question);
@@ -107,13 +106,11 @@ static void play_menu(Game *g){
             case 1:
                 if (g->board != NULL){
                     if (ask_yes_or_no("There is an ongoing game. Are you sure you want to restart?")){
-                        free(g->board);
-                        g->board = NULL;
+                        destroy_board(g);
                     }
                 }
                 if (g->board == NULL) {
-                    g->board = (char *) malloc(g->boardsize * g->boardsize);
-                    memset(g->board, ' ', g->boardsize * g->boardsize);
+                    create_board(g);
                     g->actual_player = 0;
                     play_game(g);
                 }
@@ -127,18 +124,11 @@ static void play_menu(Game *g){
                 }
                 break;
             case 3:
-                fp = fopen(SAVE_GAME, "w");
-                fwrite(g, sizeof(Game) - sizeof(char *), 1, fp);
-                fwrite(g->board, 1, g->boardsize * g->boardsize, fp);
-                fclose(fp);
+                write_game(g);
                 break;
             case 4:
                 if (ask_yes_or_no("Do you want to load game?")){
-                    fp = fopen(SAVE_GAME, "r");
-                    fread(g, sizeof(Game) - sizeof(char *), 1, fp);
-                    g->board = (char *) malloc(g->boardsize * g->boardsize);
-                    fread(g->board, 1, g->boardsize * g->boardsize, fp);
-                    fclose(fp);
+                    read_game(g);
                 }
                 break;
             case 0:
@@ -237,9 +227,6 @@ void init_game(Game *g){
 }
 
 void exit_game(Game *g){
-    if (g->board != NULL){
-        free(g->board);
-        g->board = NULL;
-    }
+    destroy_board(g);
 }
 

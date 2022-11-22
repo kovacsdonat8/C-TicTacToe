@@ -15,8 +15,9 @@ typedef struct Game{
     char p2sign;
     int p2type;
     int boardsize;
-    char *board;
     int actual_player;
+    //this must be the last member
+    char **board;
 }Game;
 
 //#define printf setbuf(stdout,0);printf
