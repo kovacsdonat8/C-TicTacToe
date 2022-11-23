@@ -97,7 +97,7 @@ void board_size(Game *g){
     bool valid = false;
     while (!valid) {
         printf("Enter the size of the board: ");
-        scanf("%d", &g->boardsize);
+        input_int(&g->boardsize);
         if (g->boardsize < 5 || g->boardsize > 50){
             printf("Invalid size!\n");
         }

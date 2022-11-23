@@ -7,11 +7,11 @@
 #include "board.h"
 
 bool human_move(Game *g, int *row, int *col){
-    char move[5];
+    char move[100];
     char *p;
     while (true) {
         printf("Enter move (e.g. A5 or 0 for main menu): ");
-        scanf("%4s", move);
+        input_str(move, sizeof(move));
         p = move;
         if (*p == '0'){
             return false;
@@ -36,13 +36,9 @@ bool human_move(Game *g, int *row, int *col){
 }
 
 bool computer_move_offensive(Game *g, int *row, int *col){
-    char move[2];
+    char move[100];
     printf("Press enter for computer move (0 for main menu): ");
-    while ((getchar()) != '\n');
-    fgets(move, 1, stdin);
-    if (move[strlen(move) - 1] == '\n'){
-        move[strlen(move) - 1] = '\0';
-    }
+    input_str(move, sizeof(move));
     if (move[0] == '0') {
         return false;
     }
@@ -53,13 +49,9 @@ bool computer_move_offensive(Game *g, int *row, int *col){
 }
 
 bool computer_move_defensive(Game *g, int *row, int *col){
-    char move[2];
+    char move[100];
     printf("Press enter for computer move (0 for main menu): ");
-    while ((getchar()) != '\n');
-    fgets(move, 1, stdin);
-    if (move[strlen(move) - 1] == '\n'){
-        move[strlen(move) - 1] = '\0';
-    }
+    input_str(move, sizeof(move));
     if (move[0] == '0') {
         return false;
     }
@@ -70,14 +62,10 @@ bool computer_move_defensive(Game *g, int *row, int *col){
 }
 
 bool computer_move_random(Game *g, int *row, int *col){
-    char move[2];
+    char move[100];
     bool valid = false;
     printf("Press enter for computer move (0 for main menu): ");
-    while ((getchar()) != '\n');
-    fgets(move, 1, stdin);
-    if (move[strlen(move) - 1] == '\n'){
-        move[strlen(move) - 1] = '\0';
-    }
+    input_str(move, sizeof(move));
     if (move[0] == '0') {
         return false;
     }

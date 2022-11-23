@@ -9,7 +9,7 @@
 bool ask_yes_or_no(char *question){
     printf("%s (Y/N) ", question);
     char yesno[5];
-    scanf("%1s", yesno);
+    input_str(yesno, sizeof (yesno));
     if (yesno[0] == 'Y' || yesno[0] == 'y'){
         return true;
     }
@@ -17,11 +17,7 @@ bool ask_yes_or_no(char *question){
 }
 
 void set_player_name(char *name){
-    while ((getchar()) != '\n');
-    fgets(name, NAME_LEN + 1, stdin);
-    if (name[strlen(name) - 1] == '\n'){
-        name[strlen(name) - 1] = '\0';
-    }
+    input_str(name, NAME_LEN + 1);
 }
 
 char *get_player_type_name(int type){
@@ -49,7 +45,7 @@ void set_player_type(int player_number, int *type){
                PLAYER_CPU_OFFENSIVE, get_player_type_name(PLAYER_CPU_OFFENSIVE),
                PLAYER_CPU_DEFENSIVE, get_player_type_name(PLAYER_CPU_DEFENSIVE),
                PLAYER_CPU_RANDOM,    get_player_type_name(PLAYER_CPU_RANDOM));
-        scanf("%d", type);
+        input_int(type);
         if (*type > 0 && *type < 5){
             valid = true;
         }
@@ -124,7 +120,7 @@ static void play_menu(Game *g){
                 "3. Save Game\n"
                 "4. Load Game\n"
                 "0. Main Menu\n");
-        scanf("%d", &menu);
+        input_int(&menu);
         switch (menu){
             case 1:
                 if (g->board != NULL){
@@ -172,7 +168,7 @@ static void options_menu(Game *g){
         printf("4. Player 2 Name: %s\n", g->p2name);
         printf("5. Player 2 Type: %s\n", get_player_type_name(g->p2type));
         printf("0. Main Menu\n");
-        scanf("%d", &menu);
+        input_int(&menu);
         switch (menu){
             case 1:
                 board_size(g);
@@ -216,7 +212,7 @@ void main_menu(Game *g){
                 "2. Options\n"
                 "3. Rules\n"
                 "0. Exit\n");
-        scanf("%d", &menu);
+        input_int(&menu);
         switch (menu){
             case 1:
                 play_menu(g);

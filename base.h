@@ -20,6 +20,9 @@ typedef struct Game{
     char **board;
 }Game;
 
+void input_str(char *str, int size);
+void input_int(int *number);
+
 // make clion debugger show standard output
 #define printf setbuf(stdout,0);printf
 #endif //AMOBA_NHF_BASE_H
