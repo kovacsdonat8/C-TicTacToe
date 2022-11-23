@@ -81,6 +81,7 @@ static void play_game(Game *g){
     int menu;
     int row;
     int col;
+    bool gameover = false;
     bool playing = true;
     bool valid = true;
     while (playing) {
@@ -95,16 +96,21 @@ static void play_game(Game *g){
                         print_board(g);
                         printf("\nGAME OVER!\nThe winner is %s!\n",
                                g->actual_player == 0 ? g->p1name : g->p2name);
+                        gameover = true;
                     }
                     if (is_board_full(g)){
                         playing = false;
                         print_board(g);
                         printf("\nGAME OVER!\nNo more moves!\nDRAW!\n");
+                        gameover = true;
                     }
                     g->actual_player = 1 - g->actual_player;
                 }
             }
         } while (!valid);
+    }
+    if (gameover){
+        destroy_board(g);
     }
 }
 

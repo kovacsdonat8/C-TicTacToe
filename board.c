@@ -14,7 +14,7 @@ void destroy_board(Game *g){
     for (int i = 0; i < g->boardsize; i++){
         if (g->board[i] != NULL){
             free(g->board[i]);
-            g->board = NULL;
+            g->board[i] = NULL;
         }
     }
     free(g->board);
