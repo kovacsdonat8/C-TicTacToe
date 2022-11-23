@@ -1,12 +1,10 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
 #include "base.h"
 #include "board.h"
 #include "moves.h"
-
 
 bool ask_yes_or_no(char *question){
     printf("%s (Y/N) ", question);
@@ -18,7 +16,7 @@ bool ask_yes_or_no(char *question){
     return false;
 }
 
-void get_player_name(char *name){
+void set_player_name(char *name){
     while ((getchar()) != '\n');
     fgets(name, NAME_LEN + 1, stdin);
     if (name[strlen(name) - 1] == '\n'){
@@ -26,12 +24,31 @@ void get_player_name(char *name){
     }
 }
 
-void get_player_type(int player_number, int *type){
+char *get_player_type_name(int type){
+    switch (type) {
+        case PLAYER_HUMAN:
+            return "Human";
+        case PLAYER_CPU_OFFENSIVE:
+            return "Computer Offensive";
+        case PLAYER_CPU_DEFENSIVE:
+            return "Computer Defensive";
+        case PLAYER_CPU_RANDOM:
+            return "Computer Random";
+        default:
+            return "Invalid player type!";
+    }
+}
+
+void set_player_type(int player_number, int *type){
     bool valid = false;
     while (!valid) {
         printf("Enter the type of Player %d "
-               "(%d: Human, %d: Computer Random, %d: Computer Defensive, %d Computer Offensive): ",
-               player_number, PLAYER_HUMAN, PLAYER_CPU_RANDOM, PLAYER_CPU_DEFENSIVE, PLAYER_CPU_OFFENSIVE);
+               "(%d: %s, %d: %s, %d: %s, %d %s): ",
+               player_number,
+               PLAYER_HUMAN,         get_player_type_name(PLAYER_HUMAN),
+               PLAYER_CPU_OFFENSIVE, get_player_type_name(PLAYER_CPU_OFFENSIVE),
+               PLAYER_CPU_DEFENSIVE, get_player_type_name(PLAYER_CPU_DEFENSIVE),
+               PLAYER_CPU_RANDOM,    get_player_type_name(PLAYER_CPU_RANDOM));
         scanf("%d", type);
         if (*type > 0 && *type < 5){
             valid = true;
@@ -145,9 +162,9 @@ static void options_menu(Game *g){
     do {
         printf("\n1. Size\n");
         printf("2. Player 1 Name: %s\n", g->p1name);
-        printf("3. Player 1 Type: %d\n", g->p1type);
+        printf("3. Player 1 Type: %s\n", get_player_type_name(g->p1type));
         printf("4. Player 2 Name: %s\n", g->p2name);
-        printf("5. Player 2 Type: %d\n", g->p2type);
+        printf("5. Player 2 Type: %s\n", get_player_type_name(g->p2type));
         printf("0. Main Menu\n");
         scanf("%d", &menu);
         switch (menu){
@@ -156,17 +173,17 @@ static void options_menu(Game *g){
                 break;
             case 2:
                 printf("Enter the name of Player 1 (max. %d chars): ", NAME_LEN);
-                get_player_name(g->p1name);
+                set_player_name(g->p1name);
                 break;
             case 3:
-                get_player_type(1, &g->p1type);
+                set_player_type(1, &g->p1type);
                 break;
             case 4:
                 printf("Enter the name of Player 2 (max. %d chars): ", NAME_LEN);
-                get_player_name(g->p2name);
+                set_player_name(g->p2name);
                 break;
             case 5:
-                get_player_type(2, &g->p2type);
+                set_player_type(2, &g->p2type);
                 break;
             case 0:
                 break;
@@ -184,7 +201,6 @@ static void print_rules(void){
     printf("To win, one player needs at least 5 marks in a line, each other next to it.\n"); // next to each other either horizontally, vertically or diagonally.
     printf("The line can be horizontal, vertical or diagonal.\n");
 }
-
 
 void main_menu(Game *g){
     int menu;
@@ -221,7 +237,7 @@ void init_game(Game *g){
     g->p1type = PLAYER_HUMAN;
     strcpy(g->p2name, "Player 2");
     g->p2sign = 'O';
-    g->p2type = PLAYER_CPU_RANDOM;
+    g->p2type = PLAYER_CPU_OFFENSIVE;
     g->board = NULL;
     g->actual_player = 0;
 }

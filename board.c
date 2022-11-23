@@ -7,32 +7,57 @@
 
 #define SAVE_GAME "amobasave.txt"
 
-bool create_board(Game *g){
-    g->board = (char**) malloc(g->boardsize * sizeof(char*));
-    for (int i = 0; i < g->boardsize; i++){
-        g->board[i] = (char*) malloc(g->boardsize * sizeof(char));
-        memset(g->board[i], ' ', g->boardsize * sizeof(char));
-    }
-    return true;
-}
-
 void destroy_board(Game *g){
     if (g->board == NULL){
         return;
     }
     for (int i = 0; i < g->boardsize; i++){
-        free(g->board[i]);
+        if (g->board[i] != NULL){
+            free(g->board[i]);
+            g->board = NULL;
+        }
     }
     free(g->board);
     g->board = NULL;
 }
 
+bool create_board(Game *g){
+    g->board = (char**) malloc(g->boardsize * sizeof(char*));
+    if (g->board == NULL){
+        return false;
+    }
+    memset(g->board, ' ', g->boardsize * sizeof(char));
+    for (int i = 0; i < g->boardsize; i++){
+        g->board[i] = (char*) malloc(g->boardsize * sizeof(char));
+        if (g->board == NULL){
+            destroy_board(g);
+            return false;
+        }
+        memset(g->board[i], ' ', g->boardsize * sizeof(char));
+    }
+    return true;
+}
+
 bool write_game(Game *g){
     FILE *fp;
     fp = fopen(SAVE_GAME, "w");
-    fwrite(g, sizeof(Game) - sizeof(char *), 1, fp);
+    if (fp == NULL){
+        printf("Unable to create file %s!\n", SAVE_GAME);
+        return false;
+    }
+    size_t written = fwrite(g, sizeof(Game) - sizeof(char *), 1, fp);
+    if (written != 1){
+        printf("Unable to write save game data!\n");
+        fclose(fp);
+        return false;
+    }
     for (int i = 0; i < g->boardsize; i++){
-        fwrite(g->board[i], 1, g->boardsize, fp);
+        written = fwrite(g->board[i], 1, g->boardsize, fp);
+        if (written != g->boardsize){
+            printf("Unable to write save game data!\n");
+            fclose(fp);
+            return false;
+        }
     }
     fclose(fp);
     return true;
@@ -42,10 +67,27 @@ bool read_game(Game *g){
     FILE *fp;
     destroy_board(g);
     fp = fopen(SAVE_GAME, "r");
-    fread(g, sizeof(Game) - sizeof(char *), 1, fp);
-    create_board(g);
+    if (fp == NULL){
+        printf("Unable to load file %s!\n", SAVE_GAME);
+        return false;
+    }
+    size_t read = fread(g, sizeof(Game) - sizeof(char *), 1, fp);
+    if (read != 1){
+        printf("Unable to load save game data!\n");
+        fclose(fp);
+        return false;
+    }
+    if (!create_board(g)){
+        printf("Not enought memory for creating the board!\n");
+        return false;
+    }
     for (int i = 0; i < g->boardsize; i++) {
-        fread(g->board[i], 1, g->boardsize, fp);
+        read = fread(g->board[i], 1, g->boardsize, fp);
+        if (read != g->boardsize){
+            printf("Unable to load save game data!\n");
+            fclose(fp);
+            return false;
+        }
     }
     fclose(fp);
     return true;
@@ -188,6 +230,115 @@ int longest_line(Game *g, int row, int col){
         maxcount = count;
     }
     return maxcount;
+}
+
+int evaluate_move(Game *g, int row, int col){
+    int maxcount = 0;
+    int countsum = 0;
+    int count = 1;
+    char mark = g->board[row][col];
+    if (mark == ' '){
+        return 0;
+    }
+    if (!has_neighbour(g, row, col)){
+        return 0;
+    }
+    int k;
+    for (k = 1; col + k < g->boardsize; k++){
+        if (g->board[row][col + k] != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    for (k = 1; col - k >= 0; k++){
+        if (g->board[row][col - k] != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    if (count > maxcount){
+        maxcount = count;
+    }
+    countsum += count;
+    count = 1;
+    for (k = 1; row + k < g->boardsize; k++){
+        if (g->board[row + k][col] != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    for (k = 1; row - k >= 0; k++){
+        if (g->board[row - k][col] != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    if (count > maxcount){
+        maxcount = count;
+    }
+    countsum += count;
+    count = 1;
+    for (k = 1; row + k < g->boardsize && col + k < g->boardsize; k++){
+        if (g->board[row + k][col + k] != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    for (k = 1; row - k >= 0 && col - k >= 0; k++){
+        if (g->board[row - k][col - k] != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    if (count > maxcount){
+        maxcount = count;
+    }
+    countsum += count;
+    count = 1;
+    for (k = 1; row - k >= 0 && col + k < g->boardsize; k++){
+        if (g->board[row - k][col + k] != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    for (k = 1; row + k < g->boardsize && col - k > 0; k++){
+        if (g->board[row + k][col - k] != mark){
+            break;
+        }
+    }
+    count = count + k - 1;
+    if (count > maxcount){
+        maxcount = count;
+    }
+    countsum += count;
+    return maxcount * 100 + countsum;
+}
+
+void evaluate_board(Game *g, int *row, int *col, char sign){
+    int max = 0;
+    int score = 0;
+    int maxscore = 0;
+    if (is_board_empty(g)){
+        *row = g->boardsize / 2;
+        *col = g->boardsize / 2;
+    }
+    else{
+        for (int i = 0; i < g->boardsize; i++) {
+            for (int j = 0; j < g->boardsize; j++) {
+                if (g->board[i][j] == ' ') {
+                    g->board[i][j] = sign;
+                    score = evaluate_move(g, i, j);
+                    if (score > maxscore){
+                        maxscore = score;
+                        *row = i;
+                        *col = j;
+                    }
+                    g->board[i][j] = ' ';
+                }
+            }
+
+        }
+    }
 }
 
 bool is_game_won(Game *g){
