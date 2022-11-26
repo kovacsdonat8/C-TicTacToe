@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "base.h"
 #include "board.h"
 
+// asks a move from the human player and decides whether it's a valid move
 bool human_move(Game *g, int *row, int *col){
     char move[100];
     char *p;
@@ -27,7 +27,7 @@ bool human_move(Game *g, int *row, int *col){
             p++;
         }
         *col = atoi(p) - 1;
-        if (*row >= g->boardsize || *col < 0 || *col >= g->boardsize){
+        if (*row < 0 || *row >= g->boardsize || *col < 0 || *col >= g->boardsize){
             printf("Invalid move!\n");
             continue;
         }
@@ -35,6 +35,7 @@ bool human_move(Game *g, int *row, int *col){
     }
 }
 
+// this is the algorithm for the offensive computer
 bool computer_move_offensive(Game *g, int *row, int *col){
     char move[100];
     printf("Press enter for computer move (0 for main menu): ");
@@ -48,6 +49,7 @@ bool computer_move_offensive(Game *g, int *row, int *col){
     return true;
 }
 
+// this is the algorithm for the defensive computer
 bool computer_move_defensive(Game *g, int *row, int *col){
     char move[100];
     printf("Press enter for computer move (0 for main menu): ");
@@ -61,6 +63,7 @@ bool computer_move_defensive(Game *g, int *row, int *col){
     return true;
 }
 
+// this is the algorithm for the random computer
 bool computer_move_random(Game *g, int *row, int *col){
     char move[100];
     bool valid = false;
@@ -77,7 +80,7 @@ bool computer_move_random(Game *g, int *row, int *col){
         while (!valid){
             *row = rand() % g->boardsize;
             *col = rand() % g->boardsize;
-            if (g->board[*row][*col] == ' '){
+            if (g->board[*row][*col] == MARK_EMPTY){
                 if (has_neighbour(g, *row, *col)){
                     valid = true;
                 }
@@ -87,12 +90,32 @@ bool computer_move_random(Game *g, int *row, int *col){
     return true;
 }
 
+// sets a mark at the specified row, col of the game board
 bool mark_player_move(Game *g, int row, int col){
     char sign = g->actual_player == 0 ? g->p1sign : g->p2sign;
-    if (g->board[row][col] != ' '){
+    if (g->board[row][col] != MARK_EMPTY){
         printf("Invalid move!\n");
         return false;
     }
     g->board[row][col] = sign;
     return true;
+}
+
+// processes the next move depending on the player type
+bool next_move(Game *g, int *row, int *col){
+    int playertype = g->actual_player == 0? g->p1type : g->p2type;
+    switch (playertype) {
+        case PLAYER_HUMAN:
+            return human_move(g, row, col);
+        case PLAYER_CPU_RANDOM:
+            return computer_move_random(g, row, col);
+        case PLAYER_CPU_DEFENSIVE:
+            return computer_move_defensive(g, row, col);
+        case PLAYER_CPU_OFFENSIVE:
+            return computer_move_offensive(g, row, col);
+        default:
+            printf("Invalid Player Type!\n");
+            break;
+    }
+    return false;
 }

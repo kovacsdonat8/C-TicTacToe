@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
+#include <stdlib.h>
 
 #include "base.h"
 #include "board.h"
 #include "moves.h"
 
-bool ask_yes_or_no(char *question){
+// asks a question from the user and decides whether the answer is yes or no
+static bool ask_yes_or_no(char *question){
     printf("%s (Y/N) ", question);
     char yesno[5];
     input_str(yesno, sizeof (yesno));
@@ -16,11 +19,13 @@ bool ask_yes_or_no(char *question){
     return false;
 }
 
-void set_player_name(char *name){
+// sets the player's name
+static void set_player_name(char *name){
     input_str(name, NAME_LEN + 1);
 }
 
-char *get_player_type_name(int type){
+// returns the string representation of the player's type
+static char *get_player_type_name(int type){
     switch (type) {
         case PLAYER_HUMAN:
             return "Human";
@@ -35,7 +40,8 @@ char *get_player_type_name(int type){
     }
 }
 
-void set_player_type(int player_number, int *type){
+// sets the player's type
+static void set_player_type(int player_number, int *type){
     bool valid = false;
     while (!valid) {
         printf("Enter the type of Player %d "
@@ -55,24 +61,7 @@ void set_player_type(int player_number, int *type){
     }
 }
 
-bool next_move(Game *g, int *row, int *col){
-    int playertype = g->actual_player == 0? g->p1type : g->p2type;
-    switch (playertype) {
-        case PLAYER_HUMAN:
-            return human_move(g, row, col);
-        case PLAYER_CPU_RANDOM:
-            return computer_move_random(g, row, col);
-        case PLAYER_CPU_DEFENSIVE:
-            return computer_move_defensive(g, row, col);
-        case PLAYER_CPU_OFFENSIVE:
-            return computer_move_offensive(g, row, col);
-        default:
-            printf("Invalid Player Type!\n");
-            break;
-    }
-    return false;
-}
-
+// plays the whole game
 static void play_game(Game *g){
     int menu;
     int row;
@@ -110,6 +99,7 @@ static void play_game(Game *g){
     }
 }
 
+// displays the play menu
 static void play_menu(Game *g){
     FILE *fp;
     int menu;
@@ -129,9 +119,13 @@ static void play_menu(Game *g){
                     }
                 }
                 if (g->board == NULL) {
-                    create_board(g);
-                    g->actual_player = 0;
-                    play_game(g);
+                    if (create_board(g)){
+                        g->actual_player = 0;
+                        play_game(g);
+                    }
+                    else{
+                        printf("Failed to create board!\n");
+                    }
                 }
                 break;
             case 2:
@@ -143,11 +137,16 @@ static void play_menu(Game *g){
                 }
                 break;
             case 3:
-                write_game(g);
+                if (!save_game(g)){
+                    printf("Could not save the game!\n");
+                }
+                else{
+                    save_game(g);
+                }
                 break;
             case 4:
                 if (ask_yes_or_no("Do you want to load game?")){
-                    read_game(g);
+                    load_game(g);
                 }
                 break;
             case 0:
@@ -159,6 +158,7 @@ static void play_menu(Game *g){
     } while (menu != 0);
 }
 
+// displays the options menu
 static void options_menu(Game *g){
     int menu;
     do {
@@ -196,14 +196,16 @@ static void options_menu(Game *g){
     } while (menu != 0);
 }
 
+// prints the game rules
 static void print_rules(void){
     printf("\nThis game is played by two players on a square grid board.\n");
-    printf("Players take turns placing their own marks (\"O\" or \"X\") in one of the still empty squares.\n");
+    printf("Players take turns placing their own marks (\"%c\" or \"%c\") in one of the still empty squares.\n", MARK_PLAYER_ONE, MARK_PLAYER_TWO);
     printf("The game ends if one player wins or if the board is full, in which case it will be a draw outcome.\n");
-    printf("To win, one player needs at least 5 marks in a line, each other next to it.\n"); // next to each other either horizontally, vertically or diagonally.
+    printf("To win, one player needs at least 5 consecutive marks in a line.\n");
     printf("The line can be horizontal, vertical or diagonal.\n");
 }
 
+// displays the main menu
 void main_menu(Game *g){
     int menu;
     do {
@@ -232,19 +234,21 @@ void main_menu(Game *g){
     } while (menu != 0);
 }
 
+// initializes the game structure
 void init_game(Game *g){
+    srand(time(0));
     g->boardsize = 10;
     strcpy(g->p1name, "Player 1");
-    g->p1sign = 'X';
+    g->p1sign = MARK_PLAYER_ONE;
     g->p1type = PLAYER_HUMAN;
     strcpy(g->p2name, "Player 2");
-    g->p2sign = 'O';
+    g->p2sign = MARK_PLAYER_TWO;
     g->p2type = PLAYER_CPU_OFFENSIVE;
     g->board = NULL;
     g->actual_player = 0;
 }
 
+// release resources
 void exit_game(Game *g){
     destroy_board(g);
 }
-

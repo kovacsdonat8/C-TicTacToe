@@ -6,6 +6,5 @@
 void main_menu(Game *g);
 void init_game(Game *g);
 void exit_game(Game *g);
-void get_player_type(int *type);
 
 #endif //AMOBA_NHF_MENU_H
