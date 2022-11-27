@@ -80,7 +80,7 @@ static void play_game(Game *g){
                         playing = false;
                         print_board(g);
                         printf("\nGAME OVER!\nThe winner is %s!\n",
-                               g->actual_player == 0 ? g->p1name : g->p2name);
+                               g->player[g->actual_player].name);
                         gameover = true;
                     }
                     if (is_board_full(g)){
@@ -130,19 +130,14 @@ static void play_menu(Game *g){
                 break;
             case 2:
                 if (g->board == NULL){
-                    printf("There are no ongoing games!\n");
+                    printf("There is no ongoing game!\n");
                 }
                 else{
                     play_game(g);
                 }
                 break;
             case 3:
-                if (!save_game(g)){
-                    printf("Could not save the game!\n");
-                }
-                else{
-                    save_game(g);
-                }
+                save_game(g);
                 break;
             case 4:
                 if (ask_yes_or_no("Do you want to load game?")){
@@ -163,10 +158,10 @@ static void options_menu(Game *g){
     int menu;
     do {
         printf("\n1. Size\n");
-        printf("2. Player 1 Name: %s\n", g->p1name);
-        printf("3. Player 1 Type: %s\n", get_player_type_name(g->p1type));
-        printf("4. Player 2 Name: %s\n", g->p2name);
-        printf("5. Player 2 Type: %s\n", get_player_type_name(g->p2type));
+        printf("2. Player 1 Name: %s\n", g->player[0].name);
+        printf("3. Player 1 Type: %s\n", get_player_type_name(g->player[0].type));
+        printf("4. Player 2 Name: %s\n", g->player[1].name);
+        printf("5. Player 2 Type: %s\n", get_player_type_name(g->player[1].type));
         printf("0. Main Menu\n");
         input_int(&menu);
         switch (menu){
@@ -175,17 +170,17 @@ static void options_menu(Game *g){
                 break;
             case 2:
                 printf("Enter the name of Player 1 (max. %d chars): ", NAME_LEN);
-                set_player_name(g->p1name);
+                set_player_name(g->player[0].name);
                 break;
             case 3:
-                set_player_type(1, &g->p1type);
+                set_player_type(1, &g->player[0].type);
                 break;
             case 4:
                 printf("Enter the name of Player 2 (max. %d chars): ", NAME_LEN);
-                set_player_name(g->p2name);
+                set_player_name(g->player[1].name);
                 break;
             case 5:
-                set_player_type(2, &g->p2type);
+                set_player_type(2, &g->player[1].type);
                 break;
             case 0:
                 break;
@@ -238,12 +233,12 @@ void main_menu(Game *g){
 void init_game(Game *g){
     srand(time(0));
     g->boardsize = 10;
-    strcpy(g->p1name, "Player 1");
-    g->p1sign = MARK_PLAYER_ONE;
-    g->p1type = PLAYER_HUMAN;
-    strcpy(g->p2name, "Player 2");
-    g->p2sign = MARK_PLAYER_TWO;
-    g->p2type = PLAYER_CPU_OFFENSIVE;
+    strcpy(g->player[0].name, "Player 1");
+    g->player[0].sign = MARK_PLAYER_ONE;
+    g->player[0].type = PLAYER_HUMAN;
+    strcpy(g->player[1].name, "Player 2");
+    g->player[1].sign = MARK_PLAYER_TWO;
+    g->player[1].type = PLAYER_CPU_OFFENSIVE;
     g->board = NULL;
     g->actual_player = 0;
 }

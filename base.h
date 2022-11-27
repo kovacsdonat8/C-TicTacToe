@@ -12,18 +12,17 @@
 #define MARK_PLAYER_ONE 'X'
 #define MARK_PLAYER_TWO 'O'
 
+typedef struct Player{
+    char name[NAME_LEN + 1];
+    char sign;
+    int type;
+}Player;
 
 typedef struct Game{
-    //TODO: create a Player sub-structure and add a player array of size 2
-    char p1name[NAME_LEN + 1];
-    char p1sign;
-    int p1type;
-    char p2name[NAME_LEN + 1];
-    char p2sign;
-    int p2type;
-    int boardsize;
+    Player player[2];
     int actual_player;
-    //this must be the last member
+    int boardsize;
+    // this must be the last member, it is saved separately
     char **board;
 }Game;
 
@@ -31,5 +30,5 @@ void input_str(char *str, int size);
 void input_int(int *number);
 
 // make clion debugger show standard output
-//  #define printf setbuf(stdout,0);printf
+// #define printf setbuf(stdout,0);printf
 #endif //AMOBA_NHF_BASE_H

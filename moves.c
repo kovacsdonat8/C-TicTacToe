@@ -44,7 +44,7 @@ bool computer_move_offensive(Game *g, int *row, int *col){
         return false;
     }
     //evaluate the board for ourselves
-    char sign = g->actual_player == 0 ? g->p1sign : g->p2sign;
+    char sign = g->player[g->actual_player].sign;
     evaluate_board(g, row, col, sign);
     return true;
 }
@@ -58,7 +58,7 @@ bool computer_move_defensive(Game *g, int *row, int *col){
         return false;
     }
     //evaluate the board for the opponent
-    char sign = g->actual_player == 0 ? g->p2sign : g->p1sign;
+    char sign = g->player[1 - g->actual_player].sign;
     evaluate_board(g, row, col, sign);
     return true;
 }
@@ -92,7 +92,7 @@ bool computer_move_random(Game *g, int *row, int *col){
 
 // sets a mark at the specified row, col of the game board
 bool mark_player_move(Game *g, int row, int col){
-    char sign = g->actual_player == 0 ? g->p1sign : g->p2sign;
+    char sign =  g->player[g->actual_player].sign;
     if (g->board[row][col] != MARK_EMPTY){
         printf("Invalid move!\n");
         return false;
@@ -103,7 +103,7 @@ bool mark_player_move(Game *g, int row, int col){
 
 // processes the next move depending on the player type
 bool next_move(Game *g, int *row, int *col){
-    int playertype = g->actual_player == 0? g->p1type : g->p2type;
+    int playertype = g->player[g->actual_player].type;
     switch (playertype) {
         case PLAYER_HUMAN:
             return human_move(g, row, col);

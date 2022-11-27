@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "base.h"
+#include "debugmalloc.h"
 
 #define SAVE_GAME "amobasave.dat"
 
@@ -24,7 +25,6 @@ void destroy_board(Game *g){
 
 // creates a new empty board
 bool create_board(Game *g){
-    //TODO: do not create board if g->board is not empty, it would cause memory leak
     if (g->board != NULL){
         return false;
     }
@@ -47,8 +47,8 @@ bool create_board(Game *g){
 
 // saves game
 bool save_game(Game *g){
-    //TODO: add error handling if board does not yet exist
     if (g->board == NULL){
+        printf("There is no ongoing game to save!\n");
         return false;
     }
     FILE *fp;
