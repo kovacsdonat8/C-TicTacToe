@@ -71,6 +71,9 @@ static void play_game(Game *g){
     bool valid = true;
     while (playing) {
         print_board(g);
+        printf("%s Turn! (%c)\n",
+               g->player[g->actual_player].name,
+               g->player[g->actual_player].sign);
         do {
             playing = next_move(g, &row, &col);
             if (playing) {

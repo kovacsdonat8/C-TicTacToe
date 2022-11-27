@@ -178,83 +178,8 @@ bool has_neighbour(Game *g, int row, int col){
     return false;
 }
 
-// length of the longest consecutive line at the given position
-static int longest_line(Game *g, int row, int col){
-    int maxcount = 0;
-    int count = 1;
-    char mark = g->board[row][col];
-    if (mark == MARK_EMPTY){
-        return 0;
-    }
-    int k;
-    for (k = 1; col + k < g->boardsize; k++){
-        if (g->board[row][col + k] != mark){
-            break;
-        }
-    }
-    count = count + k - 1;
-    for (k = 1; col - k >= 0; k++){
-        if (g->board[row][col - k] != mark){
-            break;
-        }
-    }
-    count = count + k - 1;
-    if (count > maxcount){
-        maxcount = count;
-    }
-    count = 1;
-    for (k = 1; row + k < g->boardsize; k++){
-        if (g->board[row + k][col] != mark){
-            break;
-        }
-    }
-    count = count + k - 1;
-    for (k = 1; row - k >= 0; k++){
-        if (g->board[row - k][col] != mark){
-            break;
-        }
-    }
-    count = count + k - 1;
-    if (count > maxcount){
-        maxcount = count;
-    }
-    count = 1;
-    for (k = 1; row + k < g->boardsize && col + k < g->boardsize; k++){
-        if (g->board[row + k][col + k] != mark){
-            break;
-        }
-    }
-    count = count + k - 1;
-    for (k = 1; row - k >= 0 && col - k >= 0; k++){
-        if (g->board[row - k][col - k] != mark){
-            break;
-        }
-    }
-    count = count + k - 1;
-    if (count > maxcount){
-        maxcount = count;
-    }
-    count = 1;
-    for (k = 1; row - k >= 0 && col + k < g->boardsize; k++){
-        if (g->board[row - k][col + k] != mark){
-            break;
-        }
-    }
-    count = count + k - 1;
-    for (k = 1; row + k < g->boardsize && col - k >= 0; k++){
-        if (g->board[row + k][col - k] != mark){
-            break;
-        }
-    }
-    count = count + k - 1;
-    if (count > maxcount){
-        maxcount = count;
-    }
-    return maxcount;
-}
-
-// evaluate how "good" the move is at the specified position
-static int evaluate_move(Game *g, int row, int col){
+// evaluate the score of the given position, using different metrics
+static int evaluate(Game *g, int row, int col, bool longest_line_mode){
     int maxcount = 0;
     int countsum = 0;
     int count = 1;
@@ -262,7 +187,8 @@ static int evaluate_move(Game *g, int row, int col){
     if (mark == MARK_EMPTY){
         return 0;
     }
-    if (!has_neighbour(g, row, col)){
+
+    if (!longest_line_mode && !has_neighbour(g, row, col)){
         return 0;
     }
     int k;
@@ -333,7 +259,22 @@ static int evaluate_move(Game *g, int row, int col){
         maxcount = count;
     }
     countsum += count;
-    return maxcount * 100 + countsum;
+    if (longest_line_mode){
+        return maxcount;
+    }
+    else {
+        return maxcount * 100 + countsum;
+    }
+}
+
+// length of the longest consecutive line at the given position
+static int longest_line(Game *g, int row, int col) {
+    return evaluate(g, row, col, true);
+}
+
+// evaluate how "good" the move is at the specified position
+static int evaluate_move(Game *g, int row, int col) {
+    return evaluate(g, row, col, false);
 }
 
 // find the next possible move, that has the highest evaluation score
